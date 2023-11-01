@@ -1,9 +1,10 @@
-# Pull-based ZeroTuch
+# Pull-based ZeroTouch
 Our goal is to load the right configuration and right ios on our new devices without human intervention. 
 
 This guild describe how we can do with zeroTuch with pull-based metoh. pull-based metoh meaning the new switch fixes is going all the work witkout any addtion software monetoring the process.
 
 The topolegies look like this:
+```
 
                (R1)
                 |
@@ -12,6 +13,7 @@ The topolegies look like this:
             /       \
 (ZeroTouchServer)   (new switches)
 
+```
 
 We have DHCP server in the network. We can use R1 as DHCP server or install a DHCP on the ZeroTouchServer.
 the DHCP server will point all new devices to the conntact the fileserver for a base configuration. 
@@ -35,18 +37,49 @@ the new swiches must have reachabilety to the HTTP server and in out case we put
 We wil be using ubuntu server and installed apache2 to act as our file server. 
 the ubuntu server should have a static, we will be using  192.168.131.10 for the server
 
-1) sett up the ubuntu server
+
+1) set up the ubuntu server with static IP
+
+```
+ip a
+cd /etc/netplan
+ls
+cat 00-network-manager-all.yaml
+
+vim 00-network-manager-all.yaml
+
+network:
+  renderer: networkd
+  ethernets:
+    ens160:
+      addresses:
+        - 192.168.131.10/24
+      nameservers:
+        addresses: [1.1.1.1, 1.0.0.1]
+      routes:
+        - to: default
+          via: 192.168.131.1
+  version: 2
+
+sudo netplan apply
+
+```
+
 
 
 2) Install the apache2
+
+```
 sudo apt update
 sudo apt install apache2
 sudo ufw allow 'Apache'
 sudo systemctl status apache2
+```
 
-3) Copy files to 
-copy the base configuration file(ztp.py), nessesry confiration and ios to the nessesry 
-use the following naming convertion for the config file 
+3) Copy files to server
+Copy the base configuration file(ztp.py), the confiration files and ios to the this location /var/www/html  on the ubuntu server
+
+Use the following naming convertion for the config file 
 <deivce serial nummer>-configuration.txt
 
 4) test
@@ -56,13 +89,13 @@ test the file copy from a device
 ### Setting up a DHCP server alternativ 1
 we can use R1 as DHCP server and point option 150 to http server, and option to the file
 
-
+```
 ip dhcp excluded-address 192.168.131.0 192.168.131.50
 ip dhcp pool ztp_device_pool 
  network 192.168.131.0 255.255.255.0                      
- default-router 192.168.131.1                       
- option 150 ip 192.168.131.10                     
- option 67 ascii /python_script.py 
+ default-router 192.168.131.1                                      
+ option 67 ascii http://192.168.131/ztp.py
+```
 
 ### Setting up a  DHCP server alternativ 2
 
