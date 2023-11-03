@@ -5,7 +5,7 @@ The primary aim is to automate the loading of the correct Cisco IOS and configur
 
 
 ## Guide Overview:
-This guide provides a detailed approach to implementing Zero-Touch Provisioning using a pull-based method. In a pull-based model, the new switch undertakes the necessary actions independently, without the need for additional software to monitor the process.
+This guide provides a detailed approach to implementing Zero-Touch Provisioning using a pull-based method. In a pull-based model, the new device undertakes the necessary actions independently, without the need for additional software to monitor the process.
 
 
 ## Topology Overview:
@@ -24,7 +24,7 @@ Below is a representation of the network topology utilized in this guide:
 ## Network Components:
 - **DHCP Server**: A DHCP server is essential in our network for directing new devices to retrieve their base configurations (`ztp.py`) from a file server.
   - It can be set up using an existing router (like R1) or by installing a DHCP server on the ZeroTouchServer.
-- **File Server**: In this guide, we use an HTTP server. ZTP is also supported to act as a file server that hosts the base configuration files (`ztp.py`), IOS, and device-specific configuration.
+- **File Server**: In this guide, we use an HTTP server but TFTP server is also supported to act as a file server that hosts the base configuration files (`ztp.py`), IOS, and device-specific configuration.
   - The new devices should have reachability to the file server.
 
 
@@ -32,11 +32,11 @@ Below is a representation of the network topology utilized in this guide:
 Upon booting, a new device will:
 1. The new device will contact the DHCP server to obtain an IP address and the location of the file server.
 2. The device will reach out to the file server to download its base configuration(ztp.py).
-3. The device will exicute the ztp.py inside a guestshell that are automatically deployed by the switch 
+3. The device will exicute the ztp.py inside a guestshell that are automatically deployed by the device 
 
 
 # Environment Setup:
-To support the pull-based Zero-Touch Provisioning process, a DHCP server and an Fileserver server are required. The new devices should have accebilety to the http sercer within the same VLAN for ease of communication.
+To support the pull-based Zero-Touch Provisioning process, a DHCP server and an Fileserver server are required. The new devices should have accebilety to the http sercer within the same VLAN for ease of communication. All devices should support ZTP.
 
 ### Setting Up an HTTP Server to acting as a file server
 We will be using an Ubuntu server with Apache2 as our file server.
