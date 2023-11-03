@@ -153,3 +153,31 @@ Make sure to replace http://192.168.131.10/ztp-simple.py with the our path to yo
 ### Make necessary changes to ztp.py if needed
 
 You may need to make changes to (`ztp.py`) if our environment is different
+
+For troubleshooting can test the (`ztp.py`) script my bring up the guestshell manally
+
+Enable guestshell
+
+```conf
+Device(config)#
+Device(config)#int virtualportGroup 1
+Device(config-if)#ip add 192.168.1.1 255.255.255.0
+Device(config-if)#no shut
+Device(config)#app-hosting appid guestshell
+Device(config-app-hosting)#app-vnic gateway0 virtualportgroup 1 guest-interface 0 
+Device(config-app-hosting-gateway0)#guest-ipaddress 192.168.1.2 netmask 255.255.255.0 
+Device(config-app-hosting)#app-default-gateway 192.168.1.1 guest-interface 0 
+Device(config-app-hosting)#name-server0 1.1.1.1
+Device#guestshell enable
+```
+
+Wait to guestshell is up and running and loggin the gestshell 
+
+```conf
+Device#guestshell
+make ztp.py in guestshell
+[guestshell@guestshell ~]$ vi ztp.py
+copy the ztp script and save
+
+[guestshell@guestshell ~]$ python3 ztp.py 
+```
