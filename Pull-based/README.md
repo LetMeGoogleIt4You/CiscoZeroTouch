@@ -31,7 +31,7 @@ Below is a representation of the network topology utilized in this guide:
 ## Device Boot-up Process:
 Upon booting, a new device will:
 1. The new device will contact the DHCP server to obtain an IP address and the location of the file server.
-2. The device will reach out to the file server to download its base configuration(ztp.py).
+2. The device will reach out to the file server to download its base configuration(`ztp.py`).
 3. The device will exicute the ztp.py inside a guestshell that are automatically deployed by the device 
 
 
@@ -148,8 +148,8 @@ subnet 192.168.131.0 netmask 255.255.255.0 {
 }
 ```
 
-Make sure to replace http://192.168.131.10/ztp-simple.py with the actual path to your Zero-Touch Provisioning script.
+Make sure to replace http://192.168.131.10/ztp-simple.py with the our path to your Zero-Touch Provisioning script.
 
 ### Make necessary changes to ztp.py if needed
 
-make necessary if needed 
+You may need to make changes to (`ztp.py`) if our environment is different
