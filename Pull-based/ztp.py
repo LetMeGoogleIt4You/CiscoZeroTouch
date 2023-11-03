@@ -11,9 +11,9 @@ import subprocess
 
 software_mappings = {
     'C9300-24P': {
-        'software_image': 'cat9k_iosxe.17.09.04a.SPA.bin',
+        'software_image': 'cat9k_iosxe.17.06.05.SPA.bin',
         'software_version': '17.09.04a',
-        'software_md5_checksum': '16a20aa19ec9deb2abe421efddb75fae'
+        'software_md5_checksum': '0af35c3ae22f514e92e223f6a0a257f0'
     },
     'C9500-24Q': {
         'software_image': 'cat9k_iosxe.17.06.01.SPA.bin',

@@ -1,9 +1,16 @@
-# Pull-based ZeroTouch
-Our goal is to load the right ios  and configuration   on our new devices without human intervention. 
+# Pull-based Zero-Touch Provisioning
 
-This guild describe how we can do with zeroTuch with pull-based metoh. pull-based metoh meaning the new switch fixes is going all the work witkout any addtion software monetoring the process.
+Objective:
+The primary aim is to automate the loading of the correct iOS and configuration onto our new devices, eliminating the need for manual intervention.
 
-The topolegies look like this:
+
+Guide Overview:
+This guide provides a detailed approach to implementing Zero-Touch Provisioning using a pull-based method. In a pull-based model, the new switch undertakes the necessary actions independently, without the need for additional software to monitor the process.
+
+
+Topology Overview:
+Below is a representation of the network topology utilized in this approach:
+
 
 ```
                (R1)
@@ -14,32 +21,29 @@ The topolegies look like this:
 (ZeroTouchServer)   (new switches)
 ```
 
-We have DHCP server in the network. We can use R1 as DHCP server or install a DHCP on the ZeroTouchServer.
-the DHCP server will point all new devices to the conntact the fileserver for a base configuration. 
+Network Components:
+- **DHCP Server**: A DHCP server is essential in our network for directing new devices to retrieve their base configurations from a file server.
+  - It can be set up using an existing router (like R1) or by installing one on the ZeroTouchServer.
+- **File Server**: In our setup, we use an HTTP server that hosts the base configuration files.
+  - The HTTP server and the new devices are on the same network, simplifying the retrieval process.
 
-The file server(in our case we use http server) is connected to the same network as the router and the new devices. 
-
-When a new switch boot it will download the base configuration. This base configuration is configured  so that it will download the device specific configuration and download the right for the deivce.
-
-The device in install the right ios, right config
-
-
-
-
-## Setting up the enviroment
-We need to set opp a DHCP server and HTTP server. 
-the new swiches must have reachabilety to the HTTP server and in out case we put them in the same vlan. 
+Device Boot-up Process:
+Upon booting, a new switch will:
+1. Contact the DHCP server to obtain an IP address and the location of the file server.
+2. The switch will reach out to the file server to download its base configuration(ztp.py).
+3. The switch will exicute the ztp.py inside a guestshell that are automatically deployed by the switch 
 
 
-### Setting up a HTTP server
+Environment Setup:
+To support the pull-based Zero-Touch Provisioning process, a DHCP server and an Fileserver server are required. The new switches should have accebilety to the http sercer within the same VLAN for ease of communication.
 
-We wil be using ubuntu server and installed apache2 to act as our file server. 
-the ubuntu server should have a static, we will be using  192.168.131.10 for the server
+### Setting Up an HTTP Server (acting as a file server)
+We will be using an Ubuntu server with Apache2 as our file server.
 
+#### 1) Configure Ubuntu Server with a Static IP
+First, we need to assign a static IP to our Ubuntu server, for example, `192.168.131.10`.
 
-1) set up the ubuntu server with static IP
-
-```
+```bash
 ip a
 cd /etc/netplan
 ls
@@ -48,7 +52,9 @@ cp 00-network-manager-all.yaml backup-network-manager-all.yaml
 vim 00-network-manager-all.yaml
 ```
 
-Change the 00-network-manager-all.yaml t
+
+Change the 00-network-manager-all.yaml to set a static ip
+
 
 ```
 network:
