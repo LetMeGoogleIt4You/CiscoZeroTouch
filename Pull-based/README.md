@@ -1,10 +1,10 @@
 # Pull-based Zero-Touch Provisioning
 
-Objective:
+## Objective:
 The primary aim is to automate the loading of the correct iOS and configuration onto our new devices, eliminating the need for manual intervention.
 
 
-Guide Overview:
+## Guide Overview:
 This guide provides a detailed approach to implementing Zero-Touch Provisioning using a pull-based method. In a pull-based model, the new switch undertakes the necessary actions independently, without the need for additional software to monitor the process.
 
 
@@ -21,13 +21,13 @@ Below is a representation of the network topology utilized in this approach:
 (ZeroTouchServer)   (new switches)
 ```
 
-Network Components:
+## Network Components:
 - **DHCP Server**: A DHCP server is essential in our network for directing new devices to retrieve their base configurations from a file server.
   - It can be set up using an existing router (like R1) or by installing one on the ZeroTouchServer.
-- **File Server**: In our setup, we use an HTTP server that hosts the base configuration files.
-  - The HTTP server and the new devices are on the same network, simplifying the retrieval process.
+- **File Server**: In our setup, we use an HTTP or ZTP to act as file server that hosts the base configuration files(ztp.py).
+  - the new swiches shoud have reacbiletuy to the file server.
 
-Device Boot-up Process:
+## Device Boot-up Process:
 Upon booting, a new switch will:
 1. Contact the DHCP server to obtain an IP address and the location of the file server.
 2. The switch will reach out to the file server to download its base configuration(ztp.py).
@@ -56,7 +56,7 @@ vim 00-network-manager-all.yaml
 Change the 00-network-manager-all.yaml to set a static ip
 
 
-```
+```yaml
 network:
   renderer: networkd
   ethernets:
@@ -68,10 +68,14 @@ network:
       routes:
         - to: default
           via: 192.168.131.1
+    ens192:
+      dhcp4: yes
   version: 2
 ```
 
-applying the network settings
+Apply the new network settings:
+
+
 
 ```
 sudo netplan apply
@@ -79,9 +83,9 @@ sudo netplan apply
 
 
 
-2) Install the apache2
+2) Install Apache2
 
-```
+```bash
 sudo apt update
 sudo apt install apache2
 sudo ufw allow 'Apache'
@@ -89,17 +93,21 @@ sudo systemctl status apache2
 ```
 
 
-3) Copy files to server
-Copy the base configuration file(ztp.py), the confiration files and ios to the this location /var/www/html  on the ubuntu server
+3) Copy Configuration and iOS Files to Server
+The base configuration file (ztp.py), device-specific configuration files, and iOS should be placed in the /var/www/html directory on the Ubuntu server.
 
-Use the following naming convertion for the config file 
-<deivce serial nummer>-configuration.txt
+Use a naming convention like <device_serial_number>-config.cfg for the config files.
 
-4) Test the file copy from a device
-We can test file transer by connection 
+4) Testing File Transfer
+To ensure the files can be accessed by devices, perform a test transfer from a device.
 
-### Setting up a DHCP server alternativ 1
-we can use R1 as DHCP server and point option 150 to http server, and option to the file
+```
+copy http://192.168.131.10/somefile flash:
+```
+
+
+### Setting Up a DHCP Server (Option 1)
+Utilize R1 as a DHCP server, configuring it to point to the HTTP server for option 150, and defining the bootfile for new devices.
 
 
 ```
@@ -110,20 +118,20 @@ ip dhcp pool ztp_device_pool
  option 67 ascii http://192.168.131.10/ztp.py
 ```
 
-### Setting up a  DHCP server alternativ 2
+### Setting Up a DHCP Server (Option 2)
 
 we can also instal a DHCP server on the ubuntu server
 
-```
+```bash
 sudo apt install isc-dhcp-server
 sudo systemctl status isc-dhcp-server
 sudo vim /etc/dhcp/dhcpd.conf
 ```
 
-Add the following lines to the dhcpd.conf and modify the the subnet to your local enviroment:
+Modify dhcpd.conf to fit the local environment and add the following configuration:
 
 
-```
+```conf
 option domain-name "localhost.localdomain";
 default-lease-time 600;
 max-lease-time 7200;
@@ -141,3 +149,4 @@ subnet 192.168.131.0 netmask 255.255.255.0 {
 	option bootfile-name "http:/192.168.131.10/ztp-simple.py";
 }
 ```
+Make sure to replace http://192.168.131.10/ztp-simple.py with the actual path to your Zero-Touch Provisioning script.
