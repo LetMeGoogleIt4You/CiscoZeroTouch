@@ -152,14 +152,14 @@ Make sure to replace http://192.168.131.10/ztp-simple.py with the our path to yo
 
 ### Make necessary changes to ztp.py if needed
 
-You may need to make changes to (`ztp.py`) if our environment is different
+You may need to make changes to (`ztp.py`) if your environment is different
 
-For troubleshooting can test the (`ztp.py`) script my bring up the guestshell manally
+For troubleshooting the (`ztp.py`) script you can  bring up the guestshell manually
 
 Enable guestshell
 
 ```conf
-Device(config)#
+Device#conf t
 Device(config)#int virtualportGroup 1
 Device(config-if)#ip add 192.168.1.1 255.255.255.0
 Device(config-if)#no shut
@@ -171,13 +171,60 @@ Device(config-app-hosting)#name-server0 1.1.1.1
 Device#guestshell enable
 ```
 
-Wait to guestshell is up and running and loggin the gestshell 
+Wait to guestshell is up and running and loggin the gestshell.
 
 ```conf
 Device#guestshell
 make ztp.py in guestshell
 [guestshell@guestshell ~]$ vi ztp.py
 copy the ztp script and save
-
 [guestshell@guestshell ~]$ python3 ztp.py 
+```
+
+
+If you need to totaly delete a device use this script by this hero https://pastebin.com/JcEydZ33 
+
+```
+Conf t
+!
+alias exec prep4pnp event manager run prep4pnp
+!alias exec show-pov-version event manager run show-pov-version
+!
+event manager applet prep4pnp
+event none sync yes
+action a1010 syslog msg "Start: 'prep4pnp'  EEM applet."
+action a1020 puts "Preparing device to be discovered by device automation.  Note: This script will reboot the device."
+!action a1000 wait 360
+action b1010 cli command "enable"
+action b1020 puts "Stopping pnp for now"
+action b1030 cli command "no pnp profile pnp-zero-touch"
+action b1040 puts "Saving config to update BOOT param."
+action b1040 cli command "write"
+action c1010 puts "Erasing startup-config."
+action c1020 cli command "write erase" pattern "confirm"
+action c1030 cli command "y"
+action d1010 puts "Clearing crypto keys."
+action d1020 cli command "config t"
+action d1030 cli command "crypto key zeroize" pattern "yes/no"
+action d1040 cli command "y"
+action e1010 puts "Clearing crypto PKIwri         stuff."
+action e1020 cli command "no crypto pki cert pool" pattern "yes/no"
+action e1030 cli command "y"
+action e1040 cli command "exit"
+action f1010 puts "Deleting vlan.dat file."
+action f1020 cli command "delete /force vlan.dat"
+action g1010 puts "Deleting certificate files in NVRAM."
+action g1020 cli command "delete /force nvram:*.cer"
+action h0001 puts "Deleting PnP files"
+action h0010 cli command "delete /force flash:pnp*"
+action h0020 cli command "delete /force nvram:pnp*"
+action z1010 puts "Device is prepared for being discovered by device automation.  Rebooting."
+action z1020 syslog msg "Stop: 'prep4pnp' EEM applet."
+action z1030 reload
+!
+!
+End
+ 
+prep4pnp
+
 ```

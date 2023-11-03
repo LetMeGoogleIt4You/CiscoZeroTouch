@@ -12,7 +12,7 @@ import subprocess
 software_mappings = {
     'C9300-24P': {
         'software_image': 'cat9k_iosxe.17.06.05.SPA.bin',
-        'software_version': '17.09.04a',
+        'software_version': '17.09.05',
         'software_md5_checksum': '0af35c3ae22f514e92e223f6a0a257f0'
     },
     'C9500-24Q': {
