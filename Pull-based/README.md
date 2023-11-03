@@ -97,7 +97,7 @@ The base configuration file (ztp.py), device-specific configuration files, and i
 Use a naming convention like <device_serial_number>-config.cfg for the config files.
 
 4) Testing File Transfer
-To ensure the files can be accessed by devices, perform a test transfer from a device.
+To ensure the files server is working, perform a test transfer from a one of devices.
 
 ```
 copy http://192.168.131.10/somefile flash:
@@ -118,7 +118,7 @@ ip dhcp pool ztp_device_pool
 
 ### Setting Up a DHCP Server (Option 2)
 
-we can also instal a DHCP server on the ubuntu server
+we can also install a DHCP server on the ubuntu server
 
 ```bash
 sudo apt install isc-dhcp-server
@@ -159,25 +159,26 @@ For troubleshooting the (`ztp.py`) script you can  bring up the guestshell manua
 Enable guestshell
 
 ```conf
-Device#conf t
-Device(config)#int virtualportGroup 1
-Device(config-if)#ip add 192.168.1.1 255.255.255.0
-Device(config-if)#no shut
-Device(config)#app-hosting appid guestshell
-Device(config-app-hosting)#app-vnic gateway0 virtualportgroup 1 guest-interface 0 
-Device(config-app-hosting-gateway0)#guest-ipaddress 192.168.1.2 netmask 255.255.255.0 
-Device(config-app-hosting)#app-default-gateway 192.168.1.1 guest-interface 0 
-Device(config-app-hosting)#name-server0 1.1.1.1
-Device#guestshell enable
+conf t
+int virtualportGroup 1
+ip add 192.168.1.1 255.255.255.0
+no shut
+app-hosting appid guestshell
+app-vnic gateway0 virtualportgroup 1 guest-interface 0 
+guest-ipaddress 192.168.1.2 netmask 255.255.255.0 
+app-default-gateway 192.168.1.1 guest-interface 0 
+name-server0 1.1.1.1
+end
+guestshell enable
 ```
 
 Wait to guestshell is up and running and loggin the gestshell.
 
+Log into guestshell make a ztp.py file and run it
+
 ```conf
-Device#guestshell
-make ztp.py in guestshell
-[guestshell@guestshell ~]$ vi ztp.py
-copy the ztp script and save
+guestshell
+[guestshell@guestshell ~]$vi ztp.py
 [guestshell@guestshell ~]$ python3 ztp.py 
 ```
 
