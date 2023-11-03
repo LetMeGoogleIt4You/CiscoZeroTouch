@@ -1,7 +1,7 @@
 # Pull-based Zero-Touch Provisioning
 
 ## Objective:
-The primary aim is to automate the loading of the correct iOS and configuration onto our new devices, eliminating the need for manual intervention.
+The primary aim is to automate the loading of the correct Cisco IOS and configuration onto our new devices, eliminating the need for manual intervention.
 
 
 ## Guide Overview:
@@ -9,7 +9,7 @@ This guide provides a detailed approach to implementing Zero-Touch Provisioning 
 
 
 ## Topology Overview:
-Below is a representation of the network topology utilized in this approach:
+Below is a representation of the network topology utilized in this guide:
 
 
 ```
@@ -22,16 +22,17 @@ Below is a representation of the network topology utilized in this approach:
 ```
 
 ## Network Components:
-- **DHCP Server**: A DHCP server is essential in our network for directing new devices to retrieve their base configurations from a file server.
-  - It can be set up using an existing router (like R1) or by installing one on the ZeroTouchServer.
-- **File Server**: In our setup, we use an HTTP or ZTP to act as file server that hosts the base configuration files(ztp.py).
-  - the new swiches shoud have reacbiletuy to the file server.
+- **DHCP Server**: A DHCP server is essential in our network for directing new devices to retrieve their base configurations (`ztp.py`) from a file server.
+  - It can be set up using an existing router (like R1) or by installing a DHCP server on the ZeroTouchServer.
+- **File Server**: In this guide, we use an HTTP server. ZTP is also supported to act as a file server that hosts the base configuration files (`ztp.py`), IOS, and device-specific configuration.
+  - The new devices should have reachability to the file server.
+
 
 ## Device Boot-up Process:
-Upon booting, a new switch will:
-1. Contact the DHCP server to obtain an IP address and the location of the file server.
-2. The switch will reach out to the file server to download its base configuration(ztp.py).
-3. The switch will exicute the ztp.py inside a guestshell that are automatically deployed by the switch 
+Upon booting, a new device will:
+1. The new device will contact the DHCP server to obtain an IP address and the location of the file server.
+2. The device will reach out to the file server to download its base configuration(ztp.py).
+3. The device will exicute the ztp.py inside a guestshell that are automatically deployed by the switch 
 
 
 # Environment Setup:
@@ -135,7 +136,7 @@ max-lease-time 7200;
 ddns-update-style none;
 #option ip-tftp-server code 150 = { ip-address };
 authoritative;
-# DHCP range for ZTP on C9300
+# DHCP range for ZTP
 subnet 192.168.131.0 netmask 255.255.255.0 {
 	range 192.168.131.100 192.168.131.250;
 	option domain-name "localhost.localdomain";
@@ -146,4 +147,9 @@ subnet 192.168.131.0 netmask 255.255.255.0 {
 	option bootfile-name "http:/192.168.131.10/ztp-simple.py";
 }
 ```
+
 Make sure to replace http://192.168.131.10/ztp-simple.py with the actual path to your Zero-Touch Provisioning script.
+
+### Make necessary changes to ztp.py if needed
+
+make necessary if needed 
