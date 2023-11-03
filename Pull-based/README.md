@@ -8,7 +8,7 @@ The primary aim is to automate the loading of the correct iOS and configuration 
 This guide provides a detailed approach to implementing Zero-Touch Provisioning using a pull-based method. In a pull-based model, the new switch undertakes the necessary actions independently, without the need for additional software to monitor the process.
 
 
-Topology Overview:
+## Topology Overview:
 Below is a representation of the network topology utilized in this approach:
 
 
@@ -18,7 +18,7 @@ Below is a representation of the network topology utilized in this approach:
               (sw1)
              /     \
             /       \
-(ZeroTouchServer)   (new switches)
+(ZeroTouchServer)   (new device)
 ```
 
 ## Network Components:
@@ -34,22 +34,21 @@ Upon booting, a new switch will:
 3. The switch will exicute the ztp.py inside a guestshell that are automatically deployed by the switch 
 
 
-Environment Setup:
-To support the pull-based Zero-Touch Provisioning process, a DHCP server and an Fileserver server are required. The new switches should have accebilety to the http sercer within the same VLAN for ease of communication.
+# Environment Setup:
+To support the pull-based Zero-Touch Provisioning process, a DHCP server and an Fileserver server are required. The new devices should have accebilety to the http sercer within the same VLAN for ease of communication.
 
-### Setting Up an HTTP Server (acting as a file server)
+### Setting Up an HTTP Server to acting as a file server
 We will be using an Ubuntu server with Apache2 as our file server.
 
-#### 1) Configure Ubuntu Server with a Static IP
+1) Configure Ubuntu Server with a Static IP
 First, we need to assign a static IP to our Ubuntu server, for example, `192.168.131.10`.
 
 ```bash
 ip a
-cd /etc/netplan
-ls
-cat 00-network-manager-all.yaml
-cp 00-network-manager-all.yaml backup-network-manager-all.yaml
-vim 00-network-manager-all.yaml
+sudo ls /etc/netplan/
+sudo cat /etc/netplan/00-network-manager-all.yaml
+sudo cp /etc/netplan/00-network-manager-all.yaml /etc/netplan/backup-network-manager-all.yaml
+sudo vim /etc/netplan/00-network-manager-all.yaml
 ```
 
 
@@ -73,14 +72,13 @@ network:
   version: 2
 ```
 
-Apply the new network settings:
+Apply the new network settings and verify the static ip address:
 
 
-
-```
+```bash
 sudo netplan apply
+ip a
 ```
-
 
 
 2) Install Apache2
@@ -95,7 +93,6 @@ sudo systemctl status apache2
 
 3) Copy Configuration and iOS Files to Server
 The base configuration file (ztp.py), device-specific configuration files, and iOS should be placed in the /var/www/html directory on the Ubuntu server.
-
 Use a naming convention like <device_serial_number>-config.cfg for the config files.
 
 4) Testing File Transfer
