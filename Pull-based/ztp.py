@@ -1,6 +1,7 @@
 
 # Importing cli module
 from cli import configure, cli, configurep, executep
+import cli
 import re
 import time
 import urllib
@@ -77,15 +78,15 @@ def main():
             #If Check_file_exists == False then download the image
             if file_status == False:
                 log_info('- %s Missing attempting 1 to download image to device... \n' % (software_image))
-                file_transfer(file_server, software_image)
-                #Take a new file status after the transfer
-                file_status = check_file_exists(software_image)
-            #If still Check_file_exists == False then download the image
-            if file_status == False:
-                log_info('- %s Missing attempting 2 to download image to device... \n' % (software_image))
+                
+                #use file_transfer function to download the image
+                #file_transfer(file_server, software_image)
+            
+                #use deploy_eem_download_script function to download the image
                 deploy_eem_download_script(file_server, software_image)
                 cli('event manager run download')
                 time.sleep(900) #sleep for 900 seconds
+                
                 #Take a new file status after the transfer
                 file_status = check_file_exists(software_image)
             if file_status == False:

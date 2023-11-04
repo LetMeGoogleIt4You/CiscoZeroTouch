@@ -12,7 +12,7 @@ import subprocess
 
 
 #function that transfers file from http server to flash
-def file_transfer(http_server, file):
+def file_transfer1(http_server, file):
   command1 = ('ping %s' % (http_server))
   res = cli.execute(command1)
   print(res)
@@ -26,7 +26,7 @@ def file_transfer(http_server, file):
   print('- Finished transferring device configuration file\n')
 
 
-def file_transfer1(http_server, file):
+def file_transfer2(http_server, file):
     results = cli.configure('file prompt quiet')
     eem_commands = ['event manager applet download',
                     'event none maxrun 900',
@@ -40,10 +40,10 @@ def file_transfer1(http_server, file):
 
 
 
-file_transfer('192.168.131.10', 'cat9k_iosxe.17.06.05.SPA.bin')
-
 #file_transfer1('192.168.131.10', 'cat9k_iosxe.17.06.05.SPA.bin')
-#cli('event manager run download')
-#time.sleep(600) #sleep for 600 seconds
+
+file_transfer2('192.168.131.10', 'cat9k_iosxe.17.06.05.SPA.bin')
+cli.execute('event manager run download')
+time.sleep(600) #sleep for 600 seconds
 
 #copy tftp://192.168.131.10/cat9k_iosxe.17.06.05.SPA.bin flash:/cat9k_iosxe.17.06.05.SPA.bin

@@ -33,7 +33,7 @@ Below is a representation of the network topology utilized in this guide:
 Upon booting, a new device will:
 1. Contact the DHCP server to obtain an IP address and the location of the file server.
 2. Reach out to the file server to download its base configuration (`ztp.py`).
-3. Execute the `ztp.py` inside a guest shell that is automatically deployed by the device.
+3. Execute the `ztp.py` inside a guest shell that is automatically deployed by the device. then script is done the guestshell will destoy it self
 
 
 
@@ -56,7 +56,7 @@ sudo vim /etc/netplan/00-network-manager-all.yaml
 ```
 
 
-Change the 00-network-manager-all.yaml to set a static ip
+Change the 00-network-manager-all.yaml to set a static ip. Your settings my very from this guide.
 
 
 ```yaml
@@ -110,7 +110,7 @@ sudo apt install tftpd-hpa
 sudo systemctl status tftpd-hpa
 ```
 
-Modifi the config file 
+Modify the config file 
 
 ```bash
 sudo vi /etc/default/tftpd-hpa
@@ -135,7 +135,10 @@ sudo systemctl restart tftpd-hpa
 
 ### Testing File Transfer
 Copy the ztp.py file,  configuration files and ios the file server
-The base configuration file (ztp.py), device-specific configuration files, and iOS should be placed in the /var/www/html directory on the Ubuntu server.
+The base configuration file (ztp.py), device-specific configuration files, and iOS should b on the Ubuntu server.
+
+if you are using apache2 this is the default  directory /var/www/html 
+if you are using atftpd-hpa this is the default  directory /var/www/html 
 Use a naming convention like <device_serial_number>-config.cfg for the config files.
 
 
