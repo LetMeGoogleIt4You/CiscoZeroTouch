@@ -87,7 +87,7 @@ ip a
 
 ### Setting up an http file server(Option 1)
 
-we can use apache2
+We can use apache2
 
 Install Apache2
 
