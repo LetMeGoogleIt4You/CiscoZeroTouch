@@ -1,3 +1,4 @@
+
 # Importing cli module
 from cli import configure, cli, configurep, executep
 import re
@@ -32,10 +33,11 @@ software_mappings = {
     }
 }
 
-http_server = '192.168.131.10'
+transfer_protocol = 'http' #http or tftp
+file_server = '192.168.131.10'
 log_to_file = True
 do_ios_upgrade = True
-do_config_update = True
+do_config_update = False
 
 def main():
     try:
@@ -61,7 +63,7 @@ def main():
         software_md5_checksum = software_mappings[model]['software_md5_checksum']
 
         #Check to see if this IOS is already up to date
-        log_info('- Checking if upgrade is required \n')
+        log_info('- Checking if upgrade is required or not \n')
         update_status, current_version = upgrade_required(software_version)
         #if update_status = true and do_ios_upgrade == True then upgrade is required
         if update_status == True and do_ios_upgrade == True:
@@ -70,17 +72,25 @@ def main():
             log_info('- Creating is upgradeInProcess.txt file on flash:guest-share/ \n')
             create_file('upgradeInProcess.txt')
             #Check if image transfer needed, 
-            log_info('- Checking to see if %s exists on %s \n' % (software_version, "flash:/"))
+            log_info('- Checking to see if %s exists on %s \n' % (software_image, "flash:/"))
             file_status = check_file_exists(software_image)
-            #If Check_file_exists == False transfer the IOS image
+            #If Check_file_exists == False then download the image
             if file_status == False:
-                log_info('- %s Missing attempting to download image to switch... \n' % (software_version))
-                file_transfer(http_server, software_image)
+                log_info('- %s Missing attempting 1 to download image to device... \n' % (software_image))
+                file_transfer(file_server, software_image)
                 #Take a new file status after the transfer
                 file_status = check_file_exists(software_image)
-                if file_status == False:
-                    log_info('- %s Missing after the download attempt... \n' % (software_version))
-                    raise ValueError('- %s Missing after the download attempt... \n' % (software_version))
+            #If still Check_file_exists == False then download the image
+            if file_status == False:
+                log_info('- %s Missing attempting 2 to download image to device... \n' % (software_image))
+                deploy_eem_download_script(file_server, software_image)
+                cli('event manager run download')
+                time.sleep(900) #sleep for 900 seconds
+                #Take a new file status after the transfer
+                file_status = check_file_exists(software_image)
+            if file_status == False:
+                log_info('- %s Missing after the download attempt... \n' % (software_image))
+                raise ValueError('- %s Missing after the download attempt... \n' % (software_image))
             
             #If Check_file_exists == Ture move on to md5 check
             if file_status == True:
@@ -88,10 +98,14 @@ def main():
                 md5_status = verify_dst_image_md5(software_image, software_md5_checksum)
                 if  md5_status == False:
                   log_info('- Md5 check fail Attempting to retransfer image to device... \n')
-                  file_transfer(http_server, software_image)
+                  #file_transfer1(file_server, software_image)
                   log_info('- Md5 check fail after  retransfer image to device... \n')
                   md5_status = verify_dst_image_md5(software_image, software_md5_checksum)
-            
+                  if md5_status == False:
+                    log_info('- Md5 check fail after  retransfer image to device... \n')
+                    raise ValueError('- Md5 check fail after  retransfer image to device... \n')
+
+            #If Check_file_exists == Ture and md5_status == True then deploy upgrade eem script
             if file_status == True and md5_status == True:
                 log_info('- Deploying EEM upgrade script \n')
                 deploy_eem_sw_upgrade_script(software_image)
@@ -129,11 +143,13 @@ def main():
             #print config file name to download
             config_file = '%s-config.cfg' % serial
             log_info('- Trying to downloading config file %s-config.cfg \n' % serial)
-            file_downaload = file_transfer(http_server, config_file)
-            if file_downaload == False:
+            file_download = deploy_eem_download_script(file_server, config_file)
+            cli('event manager run download')
+            time.sleep(10) #sleep for 10 seconds
+            if file_download == False:
                 log_info('- Was unable to download config file \n')
                 raise ValueError('- Was unable to download config file')
-            if file_downaload == True:
+            if file_download == True:
                 log_info('- Config file downloaded \n')
                 #update the config file
                 log_info('- Merging configuration \n')
@@ -244,30 +260,28 @@ def check_file_exists(file, file_system='flash:/'):
         raise ValueError("Unexpected output from check_file_exists")
          
 #function that transfers file from http server to flash
-def file_transfer(http_server, file):
-  log_info('- Start transferring from http://%s/%s to flash:%s  \n' % (http_server,file,file))
-  try:
-    results = cli('copy http://%s/%s flash:%s \n' % (http_server,file,file))
-    print(results)
-    if 'Error opening http://' in results:
-        log_critical('- Failed to transfer file, make sure the file on the server \n')
-        raise ValueError("Failed to transfer file, make sure the file on the server")
-    if 'copied' in results:
-        log_info('- Finished transferring file \n')
-        return True
-  except Exception as e:
-    log_critical('- Failed to transfer file \n')
-    log_critical('copy http://%s/%s flash:%s' % (http_server,file,file))
-    log_critical(e) 
-    return False
+def file_transfer(file_server, file_name):
+  log_info('- Start transferring  file \n')
+  command = 'copy %s://%s/%s flash:/%s ' % (transfer_protocol,file_server,file_name,file_name)
+  print(command)
+  res = cli(command)
+  print(res)
+  log_info(res)
+  print("\n")
+  log_info('- Finished transferring device configuration file\n')
 
-#def file_transfer(http_server, file):
-#  log_info('**** Start transferring  file *******\n')
-#  res = cli('copy http://%s/%s flash:%s' % (http_server,file,file))
-#  print(res)
-#  log_info(res)
-#  print("\n")
-#  log_info('**** Finished transferring device configuration file *******\n')
+
+def deploy_eem_download_script(file_server, file_name):
+    results = configure('file prompt quiet')
+    eem_commands = ['event manager applet download',
+                    'event none maxrun 900',
+                    'action 1.0 cli command "enable"',
+                    'action 2.0 cli command "copy %s://%s/%s flash:/%s" ' % (transfer_protocol,file_server,file_name,file_name),
+                    'action 2.1 cli command "" pattern "Destination"',
+                    'action 2.2 cli command ""'
+                    ]
+    results = configurep(eem_commands)
+    log_info('- Successfully configured download EEM script on device \n')
 
 
 #function that verifies md5 checksum of the image

@@ -24,25 +24,28 @@ Below is a representation of the network topology utilized in this guide:
 ## Network Components:
 - **DHCP Server**: A DHCP server is essential in our network for directing new devices to retrieve their base configurations (`ztp.py`) from a file server.
   - It can be set up using an existing router (like R1) or by installing a DHCP server on the ZeroTouchServer.
-- **File Server**: In this guide, we use an HTTP server but TFTP server is also supported to act as a file server that hosts the base configuration files (`ztp.py`), IOS, and device-specific configuration.
+- **File Server**: In this guide, we can use an HTTP or TFTP server to act as a file server that hosts the base configuration files (`ztp.py`), IOS, and device-specific configuration.
   - The new devices should have reachability to the file server.
+
 
 
 ## Device Boot-up Process:
 Upon booting, a new device will:
-1. The new device will contact the DHCP server to obtain an IP address and the location of the file server.
-2. The device will reach out to the file server to download its base configuration(`ztp.py`).
-3. The device will exicute the ztp.py inside a guestshell that are automatically deployed by the device 
+1. Contact the DHCP server to obtain an IP address and the location of the file server.
+2. Reach out to the file server to download its base configuration (`ztp.py`).
+3. Execute the `ztp.py` inside a guest shell that is automatically deployed by the device.
+
 
 
 # Environment Setup:
-To support the pull-based Zero-Touch Provisioning process, a DHCP server and an Fileserver server are required. The new devices should have accebilety to the http sercer within the same VLAN for ease of communication. All devices should support ZTP.
+To support the pull-based Zero-Touch Provisioning process, a DHCP server and a file server are required. The new devices should have accessibility to the HTTP server within the same VLAN for ease of communication. All devices should support ZTP.
 
-### Setting Up an HTTP Server to acting as a file server
-We will be using an Ubuntu server with Apache2 as our file server.
+### Setting up an Ubuntu server with a static IP
+We will be using an Ubuntu server to act as our file server.
 
-1) Configure Ubuntu Server with a Static IP
-First, we need to assign a static IP to our Ubuntu server, for example, `192.168.131.10`.
+Install an Ubuntu server as you wish, but it is recommended to configure the server with a static IP.
+In this example, we will be using IP `192.168.131.10`.
+
 
 ```bash
 ip a
@@ -82,7 +85,11 @@ ip a
 ```
 
 
-2) Install Apache2
+### Setting up an http file server(Option 1)
+
+we can use apache2
+
+Install Apache2
 
 ```bash
 sudo apt update
@@ -91,21 +98,59 @@ sudo ufw allow 'Apache'
 sudo systemctl status apache2
 ```
 
+copy the nessecery files to /var/www/html directory
 
-3) Copy Configuration and iOS Files to Server
+### Setting up an tftp server (Option 2)
+
+Install tftpd-hpa
+
+```bash
+sudo apt update
+sudo apt install tftpd-hpa
+sudo systemctl status tftpd-hpa
+```
+
+Modifi the config file 
+
+```bash
+sudo vi /etc/default/tftpd-hpa
+```
+
+change any settings if needed
+
+```
+# /etc/default/tftpd-hpa
+TFTP_USERNAME="tftp"
+TFTP_DIRECTORY="/var/lib/tftpboot"
+TFTP_ADDRESS=":69"
+TFTP_OPTIONS="--secure --create"
+```
+
+restart the tftp server
+
+```bash
+sudo systemctl restart tftpd-hpa
+```
+
+
+### Testing File Transfer
+Copy the ztp.py file,  configuration files and ios the file server
 The base configuration file (ztp.py), device-specific configuration files, and iOS should be placed in the /var/www/html directory on the Ubuntu server.
 Use a naming convention like <device_serial_number>-config.cfg for the config files.
 
-4) Testing File Transfer
-To ensure the files server is working, perform a test transfer from a one of devices.
 
 ```
-copy http://192.168.131.10/somefile flash:
+copy http://192.168.131.10/test.txt flash:test.txt
+
+or
+
+copy tftp://192.168.131.10/test.txt flash:test.txt
 ```
 
 
 ### Setting Up a DHCP Server (Option 1)
-Utilize R1 as a DHCP server, configuring it to point to the HTTP server for option 150, and defining the bootfile for new devices.
+We can utilize R1 as a DHCP server, configuring it to point to the HTTP or TFTP server for option 150, and defining the bootfile for new devices.
+in this example we will be pointing to the http server.
 
 
 ```
@@ -118,7 +163,7 @@ ip dhcp pool ztp_device_pool
 
 ### Setting Up a DHCP Server (Option 2)
 
-we can also install a DHCP server on the ubuntu server
+we can also install a DHCP server on the ubuntu server.
 
 ```bash
 sudo apt install isc-dhcp-server
@@ -152,14 +197,15 @@ Make sure to replace http://192.168.131.10/ztp-simple.py with the our path to yo
 
 ### Make necessary changes to ztp.py if needed
 
-You may need to make changes to (`ztp.py`) if your environment is different
+You may need to make changes to (`ztp.py`) if your environment is different.
 
-For troubleshooting the (`ztp.py`) script you can  bring up the guestshell manually
+For troubleshooting the (`ztp.py`) script you can  bring up the guestshell manually.
 
 Enable guestshell
 
 ```conf
 conf t
+iox
 int virtualportGroup 1
 ip add 192.168.1.1 255.255.255.0
 no shut
@@ -174,7 +220,7 @@ guestshell enable
 
 Wait to guestshell is up and running and loggin the gestshell.
 
-Log into guestshell make a ztp.py file and run it
+Log into guestshell make a ztp.py file and run it.
 
 ```conf
 guestshell
@@ -183,7 +229,7 @@ guestshell
 ```
 
 
-If you need to totaly delete a device use this script by this hero https://pastebin.com/JcEydZ33 
+If you need to totaly delete a device use this script by this hero https://pastebin.com/JcEydZ33.
 
 ```
 Conf t
@@ -227,5 +273,6 @@ action z1030 reload
 End
  
 prep4pnp
+
 
 ```
