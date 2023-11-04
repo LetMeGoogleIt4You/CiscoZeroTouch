@@ -1,6 +1,5 @@
 
 # Importing cli module
-from cli import configure, cli, configurep, executep
 import cli
 import re
 import time
@@ -84,7 +83,7 @@ def main():
             
                 #use deploy_eem_download_script function to download the image
                 deploy_eem_download_script(file_server, software_image)
-                cli('event manager run download')
+                cli.execute('event manager run download')
                 time.sleep(900) #sleep for 900 seconds
                 
                 #Take a new file status after the transfer
@@ -111,7 +110,7 @@ def main():
                 log_info('- Deploying EEM upgrade script \n')
                 deploy_eem_sw_upgrade_script(software_image)
                 log_info('- Performing the upgrade - switch will reboot ***\n')
-                cli('event manager run upgrade')
+                cli.execute('event manager run upgrade')
                 time.sleep(600) #sleep for 600 seconds
                 log_info('- EEM upgrade took more than 600 seconds to reload the device..Increase the sleep time by few minutes before retrying \n')
         else:
@@ -125,10 +124,10 @@ def main():
             log_info('- Deploying Cleanup EEM Script \n')
             deploy_eem_sw_cleanup_script()
             log_info('- Running Cleanup EEM Script \n')
-            cli('event manager run cleanup')
+            cli.execute('event manager run cleanup')
             time.sleep(40) #sleep for 40 seconds
             log_info('- Deleting upgradeInProcess.txt file \n')
-            cli('delete /force flash:guest-share/upgradeInProcess.txt')
+            cli.execute('delete /force flash:guest-share/upgradeInProcess.txt')
             check_upgradeInProcess_file = check_file_exists('guest-share/upgradeInProcess.txt')
         if check_upgradeInProcess_file == False:
             log_info('- Cleanup is not necessary \n')
@@ -145,7 +144,7 @@ def main():
             config_file = '%s-config.cfg' % serial
             log_info('- Trying to downloading config file %s-config.cfg \n' % serial)
             file_download = deploy_eem_download_script(file_server, config_file)
-            cli('event manager run download')
+            cli.execute('event manager run download')
             time.sleep(10) #sleep for 10 seconds
             if file_download == False:
                 log_info('- Was unable to download config file \n')
@@ -159,12 +158,12 @@ def main():
 
                 #making crypto rsa key
                 log_info('- Making crypto rsa key \n')
-                configure('crypto key generate rsa modulus 4096')
+                cli.configure('crypto key generate rsa modulus 4096')
                 log_info('- Crypto rsa key made \n')
 
                 #save config
                 log_info('- saving configuration \n')
-                configure('do write memory')
+                cli.configure('do write memory')
                 log_info('- Configuration saved \n')
         log_info('######  END OF ZTP SCRIPT ######\n')
     
@@ -202,7 +201,7 @@ def log_critical(message ):
 #function that creates a file
 def create_file(filename):
     try:
-        print ("- Creating a log file \n ")
+        print ("- Creating %s  \n " %filename)
         path = '/flash/guest-share/' + filename
         with open(path, 'a+') as fp:
              pass
@@ -222,10 +221,10 @@ def create_file(filename):
 def get_model():
     command = 'show version | inc cisco.*memory '
     try:
-        show_version = cli(command)
+        show_version = cli.execute(command)
     except Exception as e:
         time.sleep(90)
-        show_version = cli(command)
+        show_version = cli.execute(command)
     model = show_version.split()[1]
     #print(model)
     return model
@@ -233,7 +232,7 @@ def get_model():
 #function that checks if upgrade is required
 def upgrade_required(target_version):
     # Obtains show version output
-    show_version = cli('show ver | inc re, Version')
+    show_version = cli.execute('show ver | inc re, Version')
     current_version = show_version.split()[-1]
     log_info('- Current Code Version is %s  \n' % current_version)
     log_info('- Target Code Version is %s  \n' % target_version)
@@ -246,7 +245,7 @@ def upgrade_required(target_version):
 
 #function that checks if file exists on flash
 def check_file_exists(file, file_system='flash:/'):
-    results = cli('dir ' + file_system + file)
+    results = cli.execute('dir ' + file_system + file)
     if 'No such file or directory' in results:
         log_info('- The %s does NOT exist on %s \n' % (file, file_system))
         return False
@@ -265,7 +264,7 @@ def file_transfer(file_server, file_name):
   log_info('- Start transferring  file \n')
   command = 'copy %s://%s/%s flash:/%s ' % (transfer_protocol,file_server,file_name,file_name)
   print(command)
-  res = cli(command)
+  res = cli.execute(command)
   print(res)
   log_info(res)
   print("\n")
@@ -273,7 +272,7 @@ def file_transfer(file_server, file_name):
 
 
 def deploy_eem_download_script(file_server, file_name):
-    results = configure('file prompt quiet')
+    results = cli.configure('file prompt quiet')
     eem_commands = ['event manager applet download',
                     'event none maxrun 900',
                     'action 1.0 cli command "enable"',
@@ -281,7 +280,7 @@ def deploy_eem_download_script(file_server, file_name):
                     'action 2.1 cli command "" pattern "Destination"',
                     'action 2.2 cli command ""'
                     ]
-    results = configurep(eem_commands)
+    results = cli.configurep(eem_commands)
     log_info('- Successfully configured download EEM script on device \n')
 
 
@@ -289,7 +288,7 @@ def deploy_eem_download_script(file_server, file_name):
 def verify_dst_image_md5(image, src_md5, file_system='flash:/'):
     verify_md5 = 'verify /md5 ' + file_system + image
     try:
-        dst_md5 = cli(verify_md5)
+        dst_md5 = cli.execute(verify_md5)
         if src_md5 in dst_md5:
            log_info('- MD5 hashes match \n')
            return True
@@ -312,7 +311,7 @@ def deploy_eem_sw_upgrade_script(image):
                     'action 2.1 cli command "n" pattern "proceed"',
                     'action 2.2 cli command "y"'
                     ]
-    results = configurep(eem_commands)
+    results = cli.configurep(eem_commands)
     log_info('- Successfully configured upgrade EEM script on device')
 
 #function that deploys cleanup eem script
@@ -325,16 +324,16 @@ def deploy_eem_sw_cleanup_script():
                     'action 2.1 cli command "y" pattern "proceed"',
                     'action 2.2 cli command "y"'
                     ]
-    results = configurep(eem_commands)
+    results = cli.configurep(eem_commands)
     log_info('- Successfully configured cleanup EEM script on device \n')
 
 #function that gets serial number of the device
 def get_serial():
     try:
-        show_version = cli('show version')
+        show_version = cli.execute('show version')
     except Exception as e:
         time.sleep(90)
-        show_version = cli('show version')
+        show_version = cli.execute('show version')
     try:
         serial = re.search(r"System Serial Number\s+:\s+(\S+)", show_version).group(1)
     except AttributeError:
@@ -347,15 +346,15 @@ def update_config(file,file_system='flash:/'):
     update_running_config = 'copy %s%s running-config' % (file_system, file)
     save_to_startup = 'write memory'
     log_info("- Copying to startup-config \n")
-    running_config = executep(update_running_config)
-    startup_config = executep(save_to_startup)
+    running_config = cli.executep(update_running_config)
+    startup_config = cli.executep(save_to_startup)
 
  
 #function that replaces running config with config file
 def configure_replace(file,file_system='flash:/' ):
         config_command = 'configure replace %s%s force' % (file_system, file)
         log_info('- Replacing configuration \n')
-        config_repl = executep(config_command)
+        config_repl = cli.executep(config_command)
         time.sleep(30) #sleep for 30 seconds
 
 
@@ -363,7 +362,7 @@ def configure_replace(file,file_system='flash:/' ):
 def configure_merge(file,file_system='flash:/'):
      log_info('- Merging running config with given config file \n')
      config_command = 'copy %s%s running-config' %(file_system,file)
-     config_repl = executep(config_command)
+     config_repl = cli.executep(config_command)
      time.sleep(30) #sleep for 30 seconds
 
 
