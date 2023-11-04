@@ -78,6 +78,9 @@ def main():
                 file_transfer(http_server, software_image)
                 #Take a new file status after the transfer
                 file_status = check_file_exists(software_image)
+                if file_status == False:
+                    log_info('- %s Missing after the download attempt... \n' % (software_version))
+                    raise ValueError('- %s Missing after the download attempt... \n' % (software_version))
             
             #If Check_file_exists == Ture move on to md5 check
             if file_status == True:
@@ -249,20 +252,22 @@ def file_transfer(http_server, file):
     if 'Error opening http://' in results:
         log_critical('- Failed to transfer file, make sure the file on the server \n')
         raise ValueError("Failed to transfer file, make sure the file on the server")
-    elif 'Invalid input detected' in results:
-        log_critical('- Failed to transfer, Invalid input detected \n')
-        raise ValueError("Failed to transfer, Invalid input detected")
-    elif 'Invalid URL' in results:
-        log_critical('- Failed to transfer file, Invalid URL \n')
-        raise ValueError("Failed to transfer file, Invalid URL")
-    elif 'copied' in results:
+    if 'copied' in results:
         log_info('- Finished transferring file \n')
         return True
   except Exception as e:
     log_critical('- Failed to transfer file \n')
-    log_critical('copy http://%s/%s flash:%s  command failed \n' % (http_server,file,file ))
+    log_critical('copy http://%s/%s flash:%s' % (http_server,file,file))
     log_critical(e) 
     return False
+
+#def file_transfer(http_server, file):
+#  log_info('**** Start transferring  file *******\n')
+#  res = cli('copy http://%s/%s flash:%s' % (http_server,file,file))
+#  print(res)
+#  log_info(res)
+#  print("\n")
+#  log_info('**** Finished transferring device configuration file *******\n')
 
 
 #function that verifies md5 checksum of the image
