@@ -73,9 +73,9 @@ def main():
             create_file('upgradeInProcess.txt')
             #Check if image transfer needed, 
             log_info('- Checking to see if %s exists on %s \n' % (software_image, "flash:/"))
-            file_status = check_file_exists(software_image)
+            downloaded_config_image = check_file_exists(software_image)
             #If Check_file_exists == False then download the image
-            if file_status == False:
+            if downloaded_config_image == False:
                 log_info('- %s Missing attempting 1 to download image to device... \n' % (software_image))
                 
                 #use file_transfer function to download the image
@@ -88,17 +88,18 @@ def main():
                 
                 #Take a new file status after the transfer
                 file_status = check_file_exists(software_image)
-            if file_status == False:
+            if downloaded_config_image == False:
                 log_info('- %s Missing after the download attempt... \n' % (software_image))
                 raise ValueError('- %s Missing after the download attempt... \n' % (software_image))
             
             #If Check_file_exists == Ture move on to md5 check
-            if file_status == True:
+            if downloaded_config_image == True:
                 log_info('- Attempting md5 hash... \n')
                 md5_status = verify_dst_image_md5(software_image, software_md5_checksum)
                 if  md5_status == False:
                   log_info('- Md5 check fail Attempting to retransfer image to device... \n')
-                  #file_transfer1(file_server, software_image)
+                  #use file_transfer function to download the image
+                  #file_transfer(file_server, software_image)
                   log_info('- Md5 check fail after  retransfer image to device... \n')
                   md5_status = verify_dst_image_md5(software_image, software_md5_checksum)
                   if md5_status == False:
@@ -143,13 +144,19 @@ def main():
             #print config file name to download
             config_file = '%s-config.cfg' % serial
             log_info('- Trying to downloading config file %s-config.cfg \n' % serial)
-            file_download = deploy_eem_download_script(file_server, config_file)
-            cli.execute('event manager run download')
-            time.sleep(10) #sleep for 10 seconds
-            if file_download == False:
+
+            #use file_transfer function to download the image
+            file_transfer(file_server, config_file)
+
+            #use deploy_eem_download_script function to download config file
+            #file_download = deploy_eem_download_script(file_server, config_file)
+            #cli.execute('event manager run download')
+            #time.sleep(10) #sleep for 10 seconds
+            downloaded_config_file = check_file_exists(config_file)
+            if downloaded_config_file == False:
                 log_info('- Was unable to download config file \n')
                 raise ValueError('- Was unable to download config file')
-            if file_download == True:
+            if downloaded_config_file == True:
                 log_info('- Config file downloaded \n')
                 #update the config file
                 log_info('- Merging configuration \n')
