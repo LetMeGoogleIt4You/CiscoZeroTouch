@@ -18,5 +18,6 @@ we will also need a file server for the  base confiration, device-specific confi
 
 For more information on how ZTP works look at these links: 
 https://github.com/jeremycohoe/IOSXE-Zero-Touch-Provisioning 
+
 https://developer.cisco.com/docs/ios-xe/#!zero-touch-provisioning/ztp-with-tftp-server-running-on-ubuntu-vm
 
