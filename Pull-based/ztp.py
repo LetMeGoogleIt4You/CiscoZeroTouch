@@ -76,18 +76,18 @@ def main():
             downloaded_config_image = check_file_exists(software_image)
             #If Check_file_exists == False then download the image
             if downloaded_config_image == False:
-                log_info('- %s Missing attempting 1 to download image to device... \n' % (software_image))
+                log_info('- %s Missing attempting to download image to device... \n' % (software_image))
                 
-                #use file_transfer function to download the image
-                #file_transfer(file_server, software_image)
+                #Use file_transfer function to download the image
+                file_transfer(file_server, software_image)
             
                 #use deploy_eem_download_script function to download the image
-                deploy_eem_download_script(file_server, software_image)
-                cli.execute('event manager run download')
-                time.sleep(900) #sleep for 900 seconds
+                #deploy_eem_download_script(file_server, software_image)
+                #cli.execute('event manager run download')
+                #time.sleep(900) #sleep for 900 seconds
                 
                 #Take a new file status after the transfer
-                file_status = check_file_exists(software_image)
+                downloaded_config_image = check_file_exists(software_image)
             if downloaded_config_image == False:
                 log_info('- %s Missing after the download attempt... \n' % (software_image))
                 raise ValueError('- %s Missing after the download attempt... \n' % (software_image))
@@ -107,10 +107,10 @@ def main():
                     raise ValueError('- Md5 check fail after  retransfer image to device... \n')
 
             #If Check_file_exists == Ture and md5_status == True then deploy upgrade eem script
-            if file_status == True and md5_status == True:
+            if downloaded_config_image == True and md5_status == True:
                 log_info('- Deploying EEM upgrade script \n')
                 deploy_eem_sw_upgrade_script(software_image)
-                log_info('- Performing the upgrade - switch will reboot ***\n')
+                log_info('- Performing the upgrade - switch will reboot \n')
                 cli.execute('event manager run upgrade')
                 time.sleep(600) #sleep for 600 seconds
                 log_info('- EEM upgrade took more than 600 seconds to reload the device..Increase the sleep time by few minutes before retrying \n')
