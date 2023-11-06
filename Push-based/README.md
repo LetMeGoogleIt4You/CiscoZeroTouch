@@ -1,4 +1,4 @@
-# Pull-based Zero-Touch Provisioning
+# Pushed-based Zero-Touch Provisioning
 
 ## Objective:
 The primary aim is to automate the loading of the correct Cisco IOS and configuration onto our new devices, eliminating the need for manual intervention.
@@ -38,7 +38,7 @@ Upon booting, a new device will:
 
 
 # Environment Setup:
-To support the pull-based Zero-Touch Provisioning process, a DHCP server and a file server are required. The new devices should have accessibility to the HTTP server within the same VLAN for ease of communication. All devices should support ZTP.
+To support the pused-based Zero-Touch Provisioning process, a DHCP server and a file server are required. The new devices should download a base confiration file and a python script will connect to the device and load the correct ios and device spesefic configuration file .
 
 ### Setting up an Ubuntu server with a static IP
 We will be using an Ubuntu server to act as our file server.
