@@ -5,7 +5,7 @@ The primary aim is to automate the loading of the correct Cisco IOS and configur
 
 
 ## Guide Overview:
-This guide provides a detailed approach to implementing Zero-Touch Provisioning using a pull-based method. In a pull-based model, the new device undertakes the necessary actions independently, without the need for additional software to monitor the process.
+This guide provides a detailed approach to implementing Zero-Touch Provisioning using a push-based method. In a push-based model, the new device will load a default confiration and we setup a python script what will download the right ios and the correct confirutation.
 
 
 ## Topology Overview:
