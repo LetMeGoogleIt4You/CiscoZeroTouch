@@ -228,7 +228,7 @@ Log into guestshell make a ztp.py file and run it.
 ```conf
 guestshell
 [guestshell@guestshell ~]$vi ztp.py
-[guestshell@guestshell ~]$ python3 ztp.py 
+[guestshell@guestshell ~]$python3 ztp.py 
 ```
 
 
@@ -281,5 +281,7 @@ prep4pnp
 ```
 
 Links to check out
+
 https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/prog/configuration/1610/b_1610_programmability_cg/python_api.html 
+
 https://github.com/jeremycohoe/IOSXE-Zero-Touch-Provisioning/tree/master
