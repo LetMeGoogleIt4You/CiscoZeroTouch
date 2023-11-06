@@ -1,4 +1,4 @@
-# CiscoZeroTouch
+# Cisco Zero Touch
 
 This repository does not describe my sex life but how we can deploy Cisco devices with ZeroTouch.
 
