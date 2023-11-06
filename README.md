@@ -12,14 +12,16 @@ the new device load the base configuration and it downloads the correct IOS and 
 ## With the pushed-based
 The new device loads a base configuration, and the deploy server connects to the new device and pushes IOS and device-specific design to the device. 
 
+## Envitorment
+
+We need DHCP server that will point to base confiration file. 
+
+We also need a file server for the base confiration, device-specific configuration file and IOS images. 
 
 
-There is a DHCP server that will point to base confiration file. 
-we will also need a file server for the  base confiration, device-specific configuration file and IOS images. 
 
-
-
-For more information on how ZTP works look at these links: 
+## For more information 
+Do you need more information how ZTP works look at these links: 
 
 https://github.com/jeremycohoe/IOSXE-Zero-Touch-Provisioning 
 
