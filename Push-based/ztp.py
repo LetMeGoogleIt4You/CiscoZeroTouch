@@ -13,7 +13,7 @@ import subprocess
 software_mappings = {
     'C9300-24P': {
         'software_image': 'cat9k_iosxe.17.06.05.SPA.bin',
-        'software_version': '17.06.05',
+        'software_version': '17.09.05',
         'software_md5_checksum': '0af35c3ae22f514e92e223f6a0a257f0'
     },
     'C9500-24Q': {
@@ -42,7 +42,6 @@ do_config_update = False
 def main():
     try:
         print ('###### STARTING ZTP SCRIPT ######\n')
-        time.sleep(10) #sleep for 10 seconds
         #Creating a log file log_to_file = True
         if(log_to_file == True):
             loggpath = create_file('ztp.log')
@@ -76,16 +75,16 @@ def main():
             log_info('- Checking to see if %s exists on %s \n' % (software_image, "flash:/"))
             downloaded_config_image = check_file_exists(software_image)
             #If Check_file_exists == False then download the image
-            if file_status == False:
-                log_info('- %s Missing attempting 1 to download image to device... \n' % (software_image))
+            if downloaded_config_image == False:
+                log_info('- %s Missing attempting to download image to device... \n' % (software_image))
                 
                 #Use file_transfer function to download the image
                 file_transfer(file_server, software_image)
             
                 #use deploy_eem_download_script function to download the image
-                deploy_eem_download_script(file_server, software_image)
-                cli.execute('event manager run download')
-                time.sleep(900) #sleep for 900 seconds
+                #deploy_eem_download_script(file_server, software_image)
+                #cli.execute('event manager run download')
+                #time.sleep(900) #sleep for 900 seconds
                 
                 #Take a new file status after the transfer
                 downloaded_config_image = check_file_exists(software_image)
@@ -194,7 +193,7 @@ def configure_logger(path):
 
 #function that logs info messages
 def log_info(message):
-    print(message)
+    print (message)
     if(log_to_file == True):
         ztp_log = logging.getLogger('root')
         ztp_log.info(message)
@@ -207,23 +206,23 @@ def log_critical(message ):
         ztp_log.critical(message)
 
 #function that creates a file
-def create_file(file_name):
+def create_file(filename):
     try:
-        print ("- Creating %s  \n " %file_name)
-        path = '/flash/guest-share/' + file_name
+        print ("- Creating %s  \n " %filename)
+        path = '/flash/guest-share/' + filename
         with open(path, 'a+') as fp:
              pass
-        print ("- %s file created \n " %file_name)
+        print ("- %s file created \n " %filename)
         return path
     except IOError:
-      print("- Couldn't create a log file at guset-share .Trying to use  /flash/%s as an alternate log path\n"  %file_name)
-      path = '/flash/'+ file_name
+      print("- Couldn't create a log file at guset-share .Trying to use  /flash/%s as an alternate log path\n"  %filename)
+      path = '/flash/'+ filename
       with open(path, 'a+') as fp:
              pass
-      print ("- %s file created \n "  %file_name)
+      print ("- %s file created \n "  %filename)
       return path
     except Exception as e:
-         print("- Couldn't create a %s file to proceed" %file_name)
+         print("- Couldn't create a %s file to proceed" %filename)
 
 #function that gets model of the device
 def get_model():
