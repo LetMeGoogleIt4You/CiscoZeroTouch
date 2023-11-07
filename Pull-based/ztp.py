@@ -76,16 +76,16 @@ def main():
             log_info('- Checking to see if %s exists on %s \n' % (software_image, "flash:/"))
             downloaded_config_image = check_file_exists(software_image)
             #If Check_file_exists == False then download the image
-            if file_status == False:
+            if downloaded_config_image == False:
                 log_info('- %s Missing attempting 1 to download image to device... \n' % (software_image))
                 
                 #Use file_transfer function to download the image
                 file_transfer(file_server, software_image)
             
                 #use deploy_eem_download_script function to download the image
-                deploy_eem_download_script(file_server, software_image)
-                cli.execute('event manager run download')
-                time.sleep(900) #sleep for 900 seconds
+                #deploy_eem_download_script(file_server, software_image)
+                #cli.execute('event manager run download')
+                #time.sleep(900) #sleep for 900 seconds
                 
                 #Take a new file status after the transfer
                 downloaded_config_image = check_file_exists(software_image)
