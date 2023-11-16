@@ -201,7 +201,7 @@ subnet 192.168.131.0 netmask 255.255.255.0 {
 	option broadcast-address 192.168.131.255;
 	default-lease-time 600;
 	max-lease-time 7200;
-	option bootfile-name "http:/192.168.131.10/ztp-simple.py";
+	option bootfile-name "http:/192.168.131.10/ztp.py";
 }
 ```
 
