@@ -137,14 +137,14 @@ sudo systemctl restart tftpd-hpa
 ```
 
 
-### File Transfer
+### Copy files
 When the file server is up and running copy the ztp.py file,  configuration files and ios to file file server in right loction.
 
 if you are using apache2 this is the default  directory /var/www/html 
 if you are using atftpd-hpa this is the default  directory /var/www/html 
 Use a naming convention like <device_serial_number>-config.cfg for the config files.
 
-## Verify the file server
+### Verify the file server
 
 Login a device and make sure the file server is working. 
 
