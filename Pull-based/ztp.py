@@ -42,6 +42,7 @@ do_config_update = False
 def main():
     try:
         print ('###### STARTING ZTP SCRIPT ######\n')
+        time.sleep(10) #sleep for 10 seconds
         #Creating a log file log_to_file = True
         if(log_to_file == True):
             loggpath = create_file('ztp.log')
@@ -76,7 +77,7 @@ def main():
             downloaded_config_image = check_file_exists(software_image)
             #If Check_file_exists == False then download the image
             if downloaded_config_image == False:
-                log_info('- %s Missing attempting to download image to device... \n' % (software_image))
+                log_info('- %s Missing attempting 1 to download image to device... \n' % (software_image))
                 
                 #Use file_transfer function to download the image
                 file_transfer(file_server, software_image)
@@ -193,7 +194,7 @@ def configure_logger(path):
 
 #function that logs info messages
 def log_info(message):
-    print (message)
+    print(message)
     if(log_to_file == True):
         ztp_log = logging.getLogger('root')
         ztp_log.info(message)
@@ -206,23 +207,23 @@ def log_critical(message ):
         ztp_log.critical(message)
 
 #function that creates a file
-def create_file(filename):
+def create_file(file_name):
     try:
-        print ("- Creating %s  \n " %filename)
-        path = '/flash/guest-share/' + filename
+        print ("- Creating %s  \n " %file_name)
+        path = '/flash/guest-share/' + file_name
         with open(path, 'a+') as fp:
              pass
-        print ("- %s file created \n " %filename)
+        print ("- %s file created \n " %file_name)
         return path
     except IOError:
-      print("- Couldn't create a log file at guset-share .Trying to use  /flash/%s as an alternate log path\n"  %filename)
-      path = '/flash/'+ filename
+      print("- Couldn't create a log file at guset-share .Trying to use  /flash/%s as an alternate log path\n"  %file_name)
+      path = '/flash/'+ file_name
       with open(path, 'a+') as fp:
              pass
-      print ("- %s file created \n "  %filename)
+      print ("- %s file created \n "  %file_name)
       return path
     except Exception as e:
-         print("- Couldn't create a %s file to proceed" %filename)
+         print("- Couldn't create a %s file to proceed" %file_name)
 
 #function that gets model of the device
 def get_model():
