@@ -23,7 +23,7 @@ Below is a representation of the network topology utilized in this guide:
 
 ## Network Components:
 - **DHCP Server**: A DHCP server is essential in our network for directing new devices to retrieve their base configurations (`ztp.py`) from a file server.
-  - It can be set up using an existing router (like R1) or by installing a DHCP server on the ZeroTouchServer.
+  - It can be set up using an existing router (like R1) or by installing a DHCP server on a server.
 - **File Server**: In this guide, we can use an HTTP or TFTP server to act as a file server that hosts the base configuration files (`ztp.py`), IOS, and device-specific configuration.
   - The new devices should have reachability to the file server.
 
@@ -31,17 +31,18 @@ Below is a representation of the network topology utilized in this guide:
 
 ## Device Boot-up Process:
 Upon booting, a new device will:
-1. Contact the DHCP server to obtain an IP address and the location of the file server.
-2. Reach out to the file server to download its base configuration (`ztp.py`).
-3. Execute the `ztp.py` inside a guest shell that is automatically deployed by the device. then script is done the guestshell will destoy it self
+1. When a device boot til contact the DHCP server to obtain an IP address.
+2. The DHCP will respond and point to the file server for downling the  base configuration file.
+3. The device will reach out to the file server to download its base configuration (`ztp.py`).
+4. Then the device will execute the `ztp.py` inside a guestshell that is automatically deployed by the device. when the script is done the guestshell will destoy it self.
 
 
 
 # Environment Setup:
-To support the pull-based Zero-Touch Provisioning process, a DHCP server and a file server are required. The new devices should have accessibility to the HTTP server within the same VLAN for ease of communication. All devices should support ZTP.
+To support the pull-based Zero-Touch Provisioning process, a DHCP server and a file server are required. The new devices should have accessibility to the file server. in this case we will put the file server in same VLAN as the new device. All devices should support ZTP for this guild to work.
 
-### Setting up an Ubuntu server with a static IP
-We will be using an Ubuntu server to act as our file server.
+### Setting up an Ubuntu server to act ZTP server
+We will be using an ubuntu server to act as our file server.
 
 Install an Ubuntu server as you wish, but it is recommended to configure the server with a static IP.
 In this example, we will be using IP `192.168.131.10`.
@@ -82,11 +83,14 @@ Apply the new network settings and verify the static ip address:
 ```bash
 sudo netplan apply
 ip a
+ping 192.168.131.1
 ```
+
+## Setting up Fil server
+We have two option for a fil server. we can use HTTP or TFTP server. 
 
 
 ### Setting up an http file server(Option 1)
-
 We can use apache2
 
 Install Apache2
@@ -133,27 +137,32 @@ sudo systemctl restart tftpd-hpa
 ```
 
 
-### Testing File Transfer
-Copy the ztp.py file,  configuration files and ios the file server
-The base configuration file (ztp.py), device-specific configuration files, and iOS should b on the Ubuntu server.
+### File Transfer
+When the file server is up and running copy the ztp.py file,  configuration files and ios to file file server in right loction.
 
 if you are using apache2 this is the default  directory /var/www/html 
 if you are using atftpd-hpa this is the default  directory /var/www/html 
 Use a naming convention like <device_serial_number>-config.cfg for the config files.
 
+## Verify the file server
+
+Login a device and make sure the file server is working. 
 
 ```
-copy http://192.168.131.10/test.txt flash:test.txt
+copy http://192.168.131.10/ztp.py flash:ztp.py
 
 or
 
-copy tftp://192.168.131.10/test.txt flash:test.txt
+copy tftp://192.168.131.10/ztp.py flash:ztp.py
 ```
 
+## Setting up a DHCP Server
+We have two options to for settings ut a DHCP server.
 
-### Setting Up a DHCP Server (Option 1)
-We can utilize R1 as a DHCP server, configuring it to point to the HTTP or TFTP server for option 150, and defining the bootfile for new devices.
-in this example we will be pointing to the http server.
+
+### Setting Up a DHCP Server on R1 (Option 1)
+We can utilize R1 as a DHCP server, configuring it so that option 67 poin server for ot to the filserver and base confiuration. 
+in this example we will be pointing to the http file server.
 
 
 ```
@@ -164,7 +173,7 @@ ip dhcp pool ztp_device_pool
  option 67 ascii http://192.168.131.10/ztp.py
 ```
 
-### Setting Up a DHCP Server (Option 2)
+### Setting Up a DHCP Server on the ubuntu server (Option 2)
 
 we can also install a DHCP server on the ubuntu server.
 
@@ -196,13 +205,16 @@ subnet 192.168.131.0 netmask 255.255.255.0 {
 }
 ```
 
-Make sure to replace http://192.168.131.10/ztp-simple.py with the our path to your Zero-Touch Provisioning script.
+Make sure to replace http://192.168.131.10/ztp.py with the our path to your Zero-Touch Provisioning script.
 
-### Make necessary changes to ztp.py if needed
 
-You may need to make changes to (`ztp.py`) if your environment is different.
+When file server and DHCP server is setup 
 
-For troubleshooting the (`ztp.py`) script you can  bring up the guestshell manually.
+### For troubelshooting: run the ztp.py file manually
+
+You may want to make changes to (`ztp.py`) if your environment is different.
+
+We can run the  (`ztp.py`) script manually by enabling guestshell on a device.
 
 Enable guestshell
 
@@ -228,11 +240,14 @@ Log into guestshell make a ztp.py file and run it.
 ```conf
 guestshell
 [guestshell@guestshell ~]$vi ztp.py
+copy the code and save the file
 [guestshell@guestshell ~]$ python3 ztp.py 
 ```
 
 
-If you need to totaly delete a device use this script by this hero https://pastebin.com/JcEydZ33.
+### For troubelshooting: resett a device
+
+If you need to resett a device use this script proviced by this hero https://pastebin.com/JcEydZ33.
 
 ```
 Conf t
@@ -280,6 +295,5 @@ prep4pnp
 
 ```
 
-Links to check out
-https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/prog/configuration/1610/b_1610_programmability_cg/python_api.html 
-https://github.com/jeremycohoe/IOSXE-Zero-Touch-Provisioning/tree/master
+
+
