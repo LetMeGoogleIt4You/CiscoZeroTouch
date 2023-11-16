@@ -208,7 +208,7 @@ subnet 192.168.131.0 netmask 255.255.255.0 {
 Make sure to replace http://192.168.131.10/ztp.py with the our path to your Zero-Touch Provisioning script.
 
 
-When file server and DHCP server is setup 
+When file server and DHCP server set up you are good to deplay devices. 
 
 ### For troubelshooting: run the ztp.py file manually
 
