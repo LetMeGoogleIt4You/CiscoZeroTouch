@@ -1,4 +1,4 @@
-# Cisco Zero Touch Provisioning
+# Zero Touch 
 
 This repository does not describe my sex life but how we can deploy Cisco devices with ZTP.
 
@@ -9,7 +9,7 @@ There are two methods available, one push-based and the other pull-based.
 ## With the pull-based
 the new device load the base configuration and it downloads the correct IOS and device-specific configuration. 
 
-## With the pushed-based
+## With the pushed-based (in progress)
 The new device loads a base configuration, and the deploy server connects to the new device and pushes IOS and device-specific design to the device. 
 
 ## Envitorment
