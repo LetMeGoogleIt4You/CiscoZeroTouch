@@ -1,29 +1,38 @@
 # Zero Touch 
+This repository does not describe my sex life 
+jokes aside this repository dedicated to deploying network devices using Zero Touch Provisioning (ZTP). Our objective is to seamlessly load the appropriate configuration and the correct iOS onto Cisco devices right out of the box.
 
-This repository does not describe my sex life but how we can deploy Cisco devices with ZTP.
+ZTP enables two primary deployment methods: pull-based and push-based.
 
-The goal is to load the correct configuration and suitable iOS onto the device fresh from the box.
+## Pull-Based Method
+In the pull-based approach, the new device retrieves the `ztp.py` script. This script is responsible for downloading the correct iOS and a device-specific configuration.
 
-There are two methods available, one push-based and the other pull-based.
-
-## With the pull-based
-the new device load the base configuration and it downloads the correct IOS and device-specific configuration. 
-
-## With the pushed-based (in progress)
-The new device loads a base configuration, and the deploy server connects to the new device and pushes IOS and device-specific design to the device. 
-
-## Envitorment
-
-We need DHCP server that will point to base confiration file. 
-
-We also need a file server for the base confiration, device-specific configuration file and IOS images. 
+## Push-Based Method
+With the push-based method, the new device also loads a `ztp.py` script. This script activates SSH on the device and creates a text file on a file server. A separate Python script monitors this file server. When it detects a new file, it establishes a connection to the respective device to download the appropriate iOS and device-specific configuration.
 
 
+## Environment Setup
+Both methods utilize a similar environment setup:
+- **DHCP Server:** Configured to point to the base configuration file.
+- **File Server:** Stores the base configuration, device-specific configuration files, and iOS images.
 
-## For more information 
-Do you need more information how ZTP works look at these links: 
+Click this [link](https://github.com/LetMeGoogleIt4You/CiscoZeroTouch/blob/main/Environment%20Setup/README.md) to see the environment setup
 
-https://github.com/jeremycohoe/IOSXE-Zero-Touch-Provisioning 
+## Understanding ZTP: A Brief Overview
+Zero-Touch Provisioning (ZTP) is part of a suite of zero-day deployment protocols, which includes Plug-and-Play (PnP), Preboot Execution Environment (PxE), and various manufacturer-specific "call home" functions. PnP, PxE and ZTP protocols  leverage DHCP options to facilitate the deployment process. 
+We have selected ZTP for its efficiency and broad compatibility.
 
-https://developer.cisco.com/docs/ios-xe/#!zero-touch-provisioning/ztp-with-tftp-server-running-on-ubuntu-vm
+## ZTP in Action: 
+Here's a simplified representation of the ZTP process for a typical Cisco device:
+
+![Diagram](Picure/Cisco XE boot modes.png.png)
+
+**Note:** It's essential to recognize that Cisco models vary significantly; not all devices will adhere to this process identically. Expect variations based on specific model types and configurations.
+
+## Additional Resources
+For more detailed information on ZTP, please refer to the following resources:
+- [IOSXE Zero Touch Provisioning by Jeremy Cohoe](https://github.com/jeremycohoe/IOSXE-Zero-Touch-Provisioning)
+- [ZTP with TFTP Server Running on Ubuntu VM - Cisco Developer](https://developer.cisco.com/docs/ios-xe/#!zero-touch-provisioning/ztp-with-tftp-server-running-on-ubuntu-vm)
+- [Day Zero Provisioning Quick Start Guide - Cisco Developer](https://developer.cisco.com/docs/ios-xe/#!day-zero-provisioning-quick-start-guide)
+
 
