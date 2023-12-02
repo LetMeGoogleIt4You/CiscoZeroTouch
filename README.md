@@ -20,7 +20,7 @@ Both methods utilize a similar environment setup:
 Click this [link](https://github.com/LetMeGoogleIt4You/CiscoZeroTouch/blob/main/Environment%20Setup/README.md) to see the environment setup
 
 ## Understanding ZTP: A Brief Overview
-Zero-Touch Provisioning (ZTP) is part of a suite of zero-day deployment protocols, which includes Plug-and-Play (PnP), Preboot Execution Environment (PxE), and various manufacturer-specific "call home" functions hardcoeded by the manufacturer. PnP, PxE and ZTP protocols leverage DHCP options to facilitate the deployment process without any human interaction. 
+Zero-Touch Provisioning (ZTP) is just one of many zero-day deployment protocols. Another protocols includes Plug-and-Play (PnP), Preboot Execution Environment (PxE), and various manufacturer-specific "call home" functions hardcoeded on the device by the manufacturer. PnP, PxE and ZTP protocols leverage DHCP options to facilitate the deployment process without any human interaction. 
 We have selected ZTP for its efficiency and broad compatibility.
 
 ## ZTP in Action: 
