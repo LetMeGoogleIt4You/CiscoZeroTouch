@@ -6,5 +6,4 @@ The goal with this ztp.py script is that the device get the right IOS and right 
 
 ## Overviwer of the script
 
-
-![pull-based-flow](https://github.com/LetMeGoogleIt4You/CiscoZeroTouch/blob/main/Picure/Cisco%20XE%20boot%20modes.png)
+![pull-based-flow](https://github.com/LetMeGoogleIt4You/CiscoZeroTouch/blob/main/Picure/pull-based%20ztp.py.png)
