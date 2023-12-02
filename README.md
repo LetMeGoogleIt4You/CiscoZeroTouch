@@ -25,7 +25,7 @@ We have selected ZTP for its efficiency and broad compatibility.
 ## ZTP in Action: 
 Here's a simplified representation of the ZTP process for a typical Cisco device:
 
-![Diagram](Picure/Cisco XE boot modes.png.png)
+![Diagram](https://github.com/LetMeGoogleIt4You/CiscoZeroTouch/blob/main/Picure/Cisco%20XE%20boot%20modes.png)
 
 **Note:** It's essential to recognize that Cisco models vary significantly; not all devices will adhere to this process identically. Expect variations based on specific model types and configurations.
 
