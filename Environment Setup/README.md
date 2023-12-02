@@ -26,16 +26,16 @@ The following diagram illustrates the network topology used in this guide:
 ```
 
 ## Network Components:
-- **DHCP server**: A DHCP server is essential in our network for directing new devices to retrieve their base configurations (`ztp.py`) from a file server with option 67.
+- **DHCP server**: A DHCP server is essential in our network for directing new devices to retrieve the `ztp.py` file from the  server with option 67.
   - It can be set up using a router (like R1) or by installing a DHCP server on a server.
-- **File sharing server**: In this guide, we will demonstrate how to use both HTTP or TFTP protocols to act as a file server. This file server will host the base configuration files (`ztp.py`), IOSes, and device-specific configurations.
+- **File sharing server**: In this guide, we will demonstrate how to use both HTTP or TFTP protocols to act as a file server. This file server will host the  `ztp.py` files , IOSes, and device-specific configurations.
   - New devices must have reachability to the file server.
 
 ## Device Boot-up Process:
 Upon booting, a new device will:
 1. Contact the DHCP server to obtain an IP address.
-2. The DHCP will respond with a DHCP offer with IP address, subnet mask, default gateway with option 67, and a path to the file server for the device to download its base configuration file.
-3. The device will reach out to the file server to download its base configuration (`ztp.py`).
+2. The DHCP will respond with a DHCP offer with IP address, subnet mask, default gateway and with option 67 with the path to the file server for the device to download its `ztp.py` file.
+3. The device will reach out to the file server to download its  `ztp.py`.
 4. Then the device will execute the `ztp.py` inside a guest shell that is automatically deployed by the device. When the script is done, the guest shell will destroy itself.
 
 ## ZTP file
@@ -90,7 +90,7 @@ ping 192.168.131.1
 ```
 
 ## Setting up File Sharing Server
-In this guide, we will demonstrate two options for a file server:
+We will demonstrate two options for a file server:
 
 * Option 1: Using an HTTP server
 * Option 2: Using a TFTP server
@@ -108,10 +108,9 @@ sudo ufw allow 'Apache'
 sudo systemctl status apache2
 ```
 
-Copy the necessary IOS, `ztp.py`, and device-specific files to the `/var/www/html directory` of the Ubuntu machine.
 
 ### Setting up a TFTP File Sharing Server (Option 2)
-We can use tftpd-hpa to act as our TFTP file sharing server.
+We can also use tftpd-hpa to act as our TFTP file sharing server.
 
 Install tftpd-hpa:
 
@@ -145,11 +144,11 @@ sudo systemctl restart tftpd-hpa
 ```
 
 
-### Upload the Necessary Files to the File Server
+### Upload the necessary files to the file Server
 When the file server is up and running, copy the `ztp.py` file, device-specific configuration files, and IOS to the file server in the right location.
 
-If you are using Apache2, the default directory is `/var/www/htm`.
-If you are using tftpd-hpa, the default directory is `/var/lib/tftpboot`.
+- If you are using Apache2, the default directory is `/var/www/htm`.
+- If you are using tftpd-hpa, the default directory is `/var/lib/tftpboot`.
 
 The naming convention for the device-specific configuration is `<serial number>-config.txt`.
 
@@ -170,7 +169,7 @@ We will also cover two options for setting up a DHCP server.
 Make sure to use the right transfer protocol. In these examples, we will be using the HTTP protocol to copy the `ztp.py` to the device.
 If you are using TFTP as the file transfer protocol, just change it from HTTP to TFTP.
 
-### Setting Up a DHCP Server on a Cisco Device (Option 1)
+### Setting Up a DHCP Server on a cisco device (Option 1)
 We can utilize R1 as a DHCP server, configuring it so that option 67 points to the file server and `ztp.py` file.
 
 
@@ -182,7 +181,7 @@ ip dhcp pool ztp_device_pool
  option 67 ascii http://192.168.131.10/ #if you are using http
 ```
 
-### Setting Up a DHCP Server on the Ubuntu Server (Option 2)
+### Setting Up a DHCP Server on the Ubuntu server (Option 2)
 A second option is to install a DHCP server on the Ubuntu server.
 
 
@@ -217,17 +216,19 @@ subnet 192.168.131.0 netmask 255.255.255.0 {
 Your environment may look different, so make any necessary changes to fit your environment.
 
 ### End of environment setup
-When the file server and DHCP setup is complete, you are ready to deploy devices using ZTP.
+When the setup of the file server and DHCP server is complete, you are ready to deploy devices using ZTP.
 
 
-### Tips and tricks for troubelshooting the enviroemnt
-In some very rare occasion, you may need to troubleshoot the environment. Here are some tips and tricks.
+# Tips and tricks for troubelshooting the enviroemnt
+In some very rare occasion you may need to troubleshoot the environment. Here are some tips and tricks.
 
+## Verify connectivety
+verify that the new device can access the ZTP server
 
 ## Test the ztp.py File
-We can run the `ztp.py` script manually by enabling guest shell on a device.
+We can run the `ztp.py` script manually by enabling guestshell on a device.
 
-Enable guest shell:
+To enable guest shell do the following:
 
 ```conf
 conf t
@@ -256,7 +257,7 @@ copy the code and save the file
 
 
 ## Resett a device
-If you need to resett a device use this script proviced by this hero https://pastebin.com/JcEydZ33.
+If you need to completely resett a device use this script proviced by this hero https://pastebin.com/JcEydZ33.
 
 ```
 Conf t
