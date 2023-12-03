@@ -1,15 +1,15 @@
 # Zero Touch 
 This repository does not describe my sex life but how we can deploy network devices using Zero Touch Provisioning (ZTP). 
 
-Our objective is to seamlessly load the appropriate configuration and the correct iOS onto Cisco devices right out of the box.
+Our objective is to seamlessly load the appropriate configuration and the correct iOS onto network devices right out of the box.
 
-There are two primary deployment methods when using using zero day deployment: pull-based or push-based.
+There are two primary deployment methods to accomplish this: pull-based or push-based method.
 
 ## Pull-Based Method
-In the pull-based approach, the new device retrieves the `ztp.py` script. This script is responsible for downloading the correct iOS and a device-specific configuration.
+In the pull-based approach, the new device retrieves the `ztp.py` script from ZTP. This script is responsible for downloading the correct iOS and a device-specific configuration all by its self.
 
 ## Push-Based Method
-With the push-based method, the new device also loads a `ztp.py` script. This script activates SSH on the device and creates a text file on a file server. A separate Python script monitors this file server. When it detects a new file, it establishes a connection to the respective device to download the appropriate iOS and device-specific configuration.
+With the push-based method, the new device also loads another `ztp.py` script from ZTP. This script activates SSH on the device and creates a text file on a file server. A separate Python script monitors this file server and when it detects a new file, it establishes a connection to the respective device to download the appropriate iOS and device-specific configuration.
 
 
 ## Environment Setup
@@ -20,7 +20,7 @@ Both methods utilize a similar environment setup:
 Click this [link](https://github.com/LetMeGoogleIt4You/CiscoZeroTouch/blob/main/Environment%20Setup/README.md) to see the environment setup
 
 ## Understanding ZTP: A Brief Overview
-Zero-Touch Provisioning (ZTP) is just one of many zero-day deployment protocols. Another protocols includes Plug-and-Play (PnP), Preboot Execution Environment (PxE), and various manufacturer-specific "call home" functions hardcoeded on the device by the manufacturer. PnP, PxE and ZTP protocols leverage DHCP options to facilitate the deployment process without any human interaction. 
+Zero-Touch Provisioning (ZTP) is just one of many zero-day deployment protocols. Another protocols includes Plug-and-Play (PnP), Preboot Execution Environment (PxE), and various manufacturer-specific "call home" functions hardcoeded on the device by the manufacturer. PnP, PxE and ZTP is a open protocols leverage DHCP options to facilitate the deployment process without any human interaction. 
 We have selected ZTP for its efficiency and broad compatibility.
 
 ## ZTP in Action: 
