@@ -21,12 +21,17 @@ software_mappings = {
         'software_version': '17.09.04a',
         'software_md5_checksum': '16a20aa19ec9deb2abe421efddb75fae',
     },
-    'C9300-48': {
+    'C9300-48U': {
         'software_image': 'cat9k_iosxe.17.09.04a.SPA.bin',
         'software_version': '17.09.04a',
         'software_md5_checksum': '16a20aa19ec9deb2abe421efddb75fae',
     },
-    'C9500': {
+    'C9300-24U': {
+        'software_image': 'cat9k_iosxe.17.09.04a.SPA.bin',
+        'software_version': '17.09.04a',
+        'software_md5_checksum': '16a20aa19ec9deb2abe421efddb75fae',
+    },
+    'C9500-48Y4C': {
         'software_image': 'cat9k_iosxe.17.09.04a.SPA.bin',
         'software_version': '17.09.04a',
         'software_md5_checksum': '16a20aa19ec9deb2abe421efddb75fae',
@@ -34,7 +39,7 @@ software_mappings = {
 }
 
 transfer_protocol = 'tftp' #http or tftp
-file_server = '192.168.131.10'
+file_server = '192.168.131.103'
 log_to_file = True
 do_ios_upgrade = True
 do_config_update = True
@@ -145,7 +150,7 @@ def main():
 
             #print config file name to download
             config_file = '%s-config.cfg' % serial
-            log_info('- Trying to downloading config file %s-config.cfg \n' % serial)
+            log_info('- Trying to downloading config file %s.Template-Switch.txt \n' % serial)
 
             #use file_transfer function to download the image
             file_transfer(file_server, config_file)
