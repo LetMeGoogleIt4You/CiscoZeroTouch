@@ -295,6 +295,5 @@ prep4pnp
 
 ```
 
-Links to check out
-https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/prog/configuration/1610/b_1610_programmability_cg/python_api.html 
-https://github.com/jeremycohoe/IOSXE-Zero-Touch-Provisioning/tree/master
+
+
