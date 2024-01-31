@@ -11,33 +11,34 @@ from logging.handlers import RotatingFileHandler
 import subprocess 
 
 software_mappings = {
-    'C9300-24P': {
-        'software_image': 'cat9k_iosxe.17.06.05.SPA.bin',
-        'software_version': '17.06.05',
-        'software_md5_checksum': '0af35c3ae22f514e92e223f6a0a257f0'
-    },
-    'C9500-24Q': {
-        'software_image': 'cat9k_iosxe.17.06.01.SPA.bin',
-        'software_version': '17.06.01',
-        'software_md5_checksum': 'fdb9c92bae37f9130d0ee6761afe2919'
-    },
-    'ASR1001-HX': {
-        'software_image': 'asr1000-universalk9.17.05.01a.SPA.bin',
-        'software_version': '17.05.01a',
-        'software_md5_checksum': '0e4b1fc1448f8ee289634a41f75dc215'
-    },
-    'C8000V': {
+    'C9300-24T': {
         'software_image': 'cat9k_iosxe.17.09.04a.SPA.bin',
         'software_version': '17.09.04a',
-        'software_md5_checksum': '16a20aa19ec9deb2abe421efddb75fae'
+        'software_md5_checksum': '16a20aa19ec9deb2abe421efddb75fae',
+    },
+    'C9300-24S': {
+        'software_image': 'cat9k_iosxe.17.09.04a.SPA.bin',
+        'software_version': '17.09.04a',
+        'software_md5_checksum': '16a20aa19ec9deb2abe421efddb75fae',
+    },
+    'C9300-48': {
+        'software_image': 'cat9k_iosxe.17.09.04a.SPA.bin',
+        'software_version': '17.09.04a',
+        'software_md5_checksum': '16a20aa19ec9deb2abe421efddb75fae',
+    },
+    'C9500': {
+        'software_image': 'cat9k_iosxe.17.09.04a.SPA.bin',
+        'software_version': '17.09.04a',
+        'software_md5_checksum': '16a20aa19ec9deb2abe421efddb75fae',
     }
 }
 
-transfer_protocol = 'http' #http or tftp
+transfer_protocol = 'tftp' #http or tftp
 file_server = '192.168.131.10'
 log_to_file = True
 do_ios_upgrade = True
-do_config_update = False
+do_config_update = True
+
 
 def main():
     try:
